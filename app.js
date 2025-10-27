@@ -1,9 +1,10 @@
 import express from "express";
+import employeesRouter from "./routes/employeeRoutes.js";
 const app = express();
-export default app;
 
 import employees from "#db/employees";
 
+// Message for all Employees router 3000 //
 app.get("/", (req, res) => {
   res.send("Hello employees!");
 });
@@ -32,3 +33,6 @@ app.get("/employees/:id", (req, res) => {
 
   res.send(employee);
 });
+
+// At the Last //
+export default app;
