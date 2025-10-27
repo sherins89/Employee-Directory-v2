@@ -1,6 +1,7 @@
 import { Router } from "express";
 import employees, { addEmployee } from "#db/employees";
-const router = router();
+
+const router = Router();
 
 //GET ALL Employees //
 router.get("/", (req, res) => {
@@ -9,12 +10,11 @@ router.get("/", (req, res) => {
 
 // GET Random employees //
 router.get("/random", (req, res) => {
-  randomIdx = Math.floor(Math.random() * employees.length);
-  res.json(employees[randomIdx]);
+  const randomIndex = Math.floor(Math.random() * employees.length);
+  res.json(employees[randomIndex]);
 });
 
-// GET Employees by ID //
-
+// GET /employees/:id //
 router.get("/:id", (req, res) => {
   const id = Number(req.params.id);
   const employee = employees.find((e) => e.id === id);
@@ -22,19 +22,17 @@ router.get("/:id", (req, res) => {
   if (!employee) {
     return res.status(404).send("Employee not found");
   }
-
   res.json(employee);
 });
 
+// POST Employees //
 router.post("/", (req, res) => {
   const { name } = req.body ?? {};
-
-  if (!name || typeof name !== "string" || name.trim() === "") {
+  if (typeof name !== "string" || name.trim() === "") {
     return res.status(400).send("Invalid or missing employee name");
   }
-
-  const newEmployee = addEmployee(name.trim());
-  res.status(201).json(newEmployee);
+  const created = addEmployee(name.trim());
+  res.status(201).json(created);
 });
 
 export default router;

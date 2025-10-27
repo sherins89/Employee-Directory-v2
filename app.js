@@ -2,36 +2,26 @@ import express from "express";
 import employeesRouter from "./routes/employeeRoutes.js";
 const app = express();
 
-import employees from "#db/employees";
+function logger(req, res, next) {
+  console.log(`${req.method} ${req.url}`);
+  next();
+}
+
+app.use(logger);
+app.use(express.json());
 
 // Message for all Employees router 3000 //
 app.get("/", (req, res) => {
   res.send("Hello employees!");
 });
 
-app.get("/employees", (req, res) => {
-  res.send(employees);
-});
+app.use("/employees", employeesRouter);
 
-// Note: this middleware has to come first! Otherwise, Express will treat
-// "random" as the argument to the `id` parameter of /employees/:id.
-app.get("/employees/random", (req, res) => {
-  const randomIndex = Math.floor(Math.random() * employees.length);
-  res.send(employees[randomIndex]);
-});
+// Error 500//
 
-app.get("/employees/:id", (req, res) => {
-  const { id } = req.params;
-
-  // req.params are always strings, so we need to convert `id` into a number
-  // before we can use it to find the employee
-  const employee = employees.find((e) => e.id === +id);
-
-  if (!employee) {
-    return res.status(404).send("Employee not found");
-  }
-
-  res.send(employee);
+app.use((err, req, res, next) => {
+  console.error(err); // keep the stack for debugging
+  res.status(500).send("Internal Server Error"); // don’t leak internals
 });
 
 // At the Last //
